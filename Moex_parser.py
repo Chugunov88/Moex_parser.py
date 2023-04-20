@@ -12,6 +12,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+from dotenv import load_dotenv
+import os
 
 today = date.today()
 formatted_date = today.strftime("%d-%m-%Y")
@@ -21,7 +23,7 @@ options = Options()
 options.add_experimental_option("excludeSwitches", ['enable-logging'])
 options.add_argument("user-agent=[Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36]")
 driver = webdriver.Chrome(executable_path='C:\\Users\\User\\PycharmProjects\\resource\\chromedriver.exe', options=options)
-print("Start Test 1")
+print("Начинаем работу парсера")
 
 """Открыть страницу логина и авторизоваться"""
 url = 'https://www.moex.com/'
@@ -192,10 +194,11 @@ def num2str(num, forms):
 def send_mail():
     """Модуль для почты"""
     # Указываем параметры для подключения к серверу SMTP
+    load_dotenv()
     smtp_host = 'smtp.yandex.ru'
     smtp_port = 587
     smtp_user = 'psflash@yandex.ru'
-    smtp_password = 'zeiwegnlbayanmmx'
+    smtp_password = os.getenv('SMTP_PASSWORD')
 
     # Создаем объект MIMEMultipart для добавления текста и вложения
     msg = MIMEMultipart()
