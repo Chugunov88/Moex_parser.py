@@ -62,14 +62,26 @@ except AssertionError:
 xml = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'col-md-48') and contains(@class, 'text-center') and contains(@class, 'margin-tb-10')]")))
 xml.click()
 get_url = driver.current_url
-try:
-    match = re.search(r'currency=(\w+/\w+)', get_url)
-    currency = match.group(1)
-    print(f"Проверка на верную валютуную пару: {currency}")
-    assert currency == "USD/RUB"
-    print("Корректная валютная пара USD/RUB")
-except (AttributeError, AssertionError):
-    print('Неверная валюта в URL или URL не найден')
+attempts = 0
+while attempts < 3:
+    try:
+        get_url = driver.current_url
+        match = re.search(r'currency=(\w+/\w+)', get_url)
+        currency = match.group(1)
+        print(f"Проверка на верную валютуную пару: {currency}")
+        assert currency == "USD/RUB"
+        print("Корректная валютная пара USD/RUB")
+        break
+    except (AttributeError, AssertionError, Exception):
+        print('Неверная валюта в URL или URL не найден')
+        get_url = re.sub(r'currency=([^/]*)', r'currency=RUB', get_url)
+        driver.get(get_url)
+        attempts += 1
+        if attempts == 3:
+            print("Не удалось получить корректную валютную пару после трех попыток. Редактируйте код программы.")
+            exit()
+else:
+    print("Не удалось получить корректную валютную пару после трех попыток")
 print(f"Текущая страница: {get_url}")
 
 get_url = re.sub(r'currency=([^/]*)', r'currency=JPY', get_url)
